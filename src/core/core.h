@@ -13,5 +13,6 @@
 #include "bounds.h"
 #include "scene.h"
 #include "bvh.h"
+#include "loader.h"
 
 #endif  // CORE_CORE_H_

@@ -9,10 +9,16 @@
 #include "bvh.h"
 
 // Constructor
-Triangle::Triangle(Point3f v0, Point3f v1, Point3f v2) : v0(v0), v1(v1), v2(v2)
+Triangle::Triangle(const Point3f& v0, const Point3f& v1, const Point3f& v2)
+    // clang-format off
+    : v0(v0), v1(v1), v2(v2),
+      t0(), t1(), t2(),
+      n0(), n1(), n2()
+// clang-format on
 {
     e1 = v1 - v0;
     e2 = v2 - v0;
+
     normal = Normalize(Cross(e1, e2));
 }
 
@@ -33,21 +39,6 @@ bool Triangle::Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRecord)
     }
 
     return false;
-}
-
-Bounds3 Triangle::WorldBound() const
-{
-    return Union(Bounds3(v0, v1), v2);
-}
-
-Point3f Triangle::GetVertex(int index) const
-{
-    if (index == 0)
-        return v0;
-    else if (index == 1)
-        return v1;
-    else
-        return v2;
 }
 
 // Möller–Trumbore: Get barycentric coordinates
@@ -81,17 +72,15 @@ bool Triangle::rayIntersectMT(const Ray& ray, float& tNear, float& u, float& v) 
 /////////////////////////////////////////////////////////////////////////////////
 
 // Constructor
-MeshTriangle::MeshTriangle(const std::string&               filename,
-                           const std::shared_ptr<Material>& material)
-    : m_Triangles(), m_Bvh(nullptr)
+MeshTriangle::MeshTriangle(const std::string& meshName) : m_MeshName(meshName), m_Triangles(), m_Bvh(nullptr)
 {
     // Load OBJ
 
     // -- set Triangle's material
 
     // Build BVH
-    spdlog::info("Building MeshTriangle BVH...");
-    m_Bvh = std::make_shared<BVHAccel>(*this);
+    // spdlog::info("Building MeshTriangle BVH...");
+    // m_Bvh = std::make_shared<BVHAccel>(*this);
 }
 
 bool MeshTriangle::Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRecord) const

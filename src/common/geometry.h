@@ -5,6 +5,9 @@
 #ifndef COMMON_GEOMETRY_H_
 #define COMMON_GEOMETRY_H_
 
+#include <spdlog/fmt/ostr.h>
+
+
 #include <cmath>
 #include <iostream>
 

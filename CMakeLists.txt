@@ -32,7 +32,8 @@ set(CORE_SOURCE
     src/core/core.cpp
     src/core/scene.cpp
     src/core/bvh.cpp
-    src/core/triangle.cpp)
+    src/core/triangle.cpp
+    src/core/loader.cpp)
 
 set(CORE_HEADERS
     src/core/core.h
@@ -44,7 +45,8 @@ set(CORE_HEADERS
     src/core/bounds.h
     src/core/scene.h
     src/core/bvh.h
-    src/core/triangle.h)
+    src/core/triangle.h
+    src/core/loader.h)
 
 add_library(core STATIC
     ${CORE_SOURCE}

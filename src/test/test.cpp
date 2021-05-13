@@ -7,6 +7,9 @@
 #include <iostream>
 
 #include "common.h"
+#include "core.h"
+#include "triangle.h"
+#include "loader.h"
 
 int main()
 {
@@ -14,9 +17,13 @@ int main()
 
     spdlog::set_level(spdlog::level::debug);
 
-    Vector2f v2(1.53f, 1.5111f);
+    Loader loader("obj/mary/mary.obj");
 
-    std::cout << v2 << std::endl;
+    // auto meshTriangles = loader.MeshTriangles();
+
+    spdlog::debug("cool!");
+
+    // MeshTriangle
 
     return 0;
 }
