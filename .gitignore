@@ -1,0 +1,27 @@
+# clion
+cmake-build-debug/
+build/
+CMakeFiles/
+.idea/
+CMakeCache.txt
+Makefile
+
+# cpp
+*.cbp
+
+# mac
+.DS_Store
+
+# config file
+*.ini
+
+# resources
+obj/horizon
+obj/cart
+obj/cyborg
+obj/backpack
+
+# specific sources
+
+# output
+output/image.ppm
