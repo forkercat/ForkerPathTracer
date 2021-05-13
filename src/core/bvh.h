@@ -10,6 +10,7 @@
 
 // Forward Declarations
 class Scene;
+class MeshTriangle;
 struct BVHNode;
 
 class BVHAccel : public Hittable
@@ -17,6 +18,7 @@ class BVHAccel : public Hittable
 public:
     // Constructors
     explicit BVHAccel(const Scene& scene);
+    explicit BVHAccel(const MeshTriangle& meshTriangle);
     explicit BVHAccel(const std::vector<std::shared_ptr<Hittable>>& objects);
 
     // Public Methods

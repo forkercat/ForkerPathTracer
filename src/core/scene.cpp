@@ -41,7 +41,7 @@ bool Scene::Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRecord) co
     }
 }
 
-Bounds3 Scene::WorldBound() const
+Bounds3 Scene::WorldBound() const  // expensive
 {
     Bounds3 worldBound(Point3f(0.f));
 

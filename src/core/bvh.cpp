@@ -9,8 +9,13 @@
 #include <algorithm>
 
 #include "scene.h"
+#include "triangle.h"
 
 BVHAccel::BVHAccel(const Scene& scene) : BVHAccel(scene.GetObjects())
+{
+}
+
+BVHAccel::BVHAccel(const MeshTriangle& meshTriangle) : BVHAccel(meshTriangle.GetTriangles())
 {
 }
 
@@ -73,6 +78,7 @@ bool BVHAccel::getHitRecord(std::shared_ptr<BVHNode> node, const Ray& ray, Float
     bool hitLeft = getHitRecord(node->left, ray, tMin, tMax, leftHitRecord);
     bool hitRight = getHitRecord(node->right, ray, tMin, tMax, rightHitRecord);
 
+    // Get the closest time
     if (hitLeft)
     {
         hitRecord = leftHitRecord;

@@ -28,7 +28,11 @@ target_link_libraries(common PRIVATE spdlog::spdlog)
 
 #########################################################
 
-set(CORE_SOURCE src/core/core.cpp src/core/scene.cpp src/core/bvh.cpp)
+set(CORE_SOURCE
+    src/core/core.cpp
+    src/core/scene.cpp
+    src/core/bvh.cpp
+    src/core/triangle.cpp)
 
 set(CORE_HEADERS
     src/core/core.h
