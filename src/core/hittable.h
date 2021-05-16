@@ -20,11 +20,12 @@ struct HitRecord
     Point3f                   p;
     Vector3f                  normal;
     Float                     t;
+    Vector2f                  texCoord;
     bool                      frontFace;
     std::shared_ptr<Material> material;
 
     HitRecord()
-        : p(0.f), normal(0.f), t(Infinity), frontFace(false), material(nullptr) { }
+        : p(0.f), normal(0.f), t(Infinity), texCoord(), frontFace(false), material(nullptr) { }
 
     inline void SetFrontFace(const Ray& ray, const Vector3f& outwardNormal)
     {

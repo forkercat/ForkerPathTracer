@@ -7,24 +7,26 @@
 
 #include "common.h"
 #include "hittable.h"
+#include "texture.h"
 
 class Material
 {
 public:
     virtual bool Scatter(const Ray& rayIn, const HitRecord& hitRecord,
-                         Color3& attenuation,
-                         Ray& rayScattered) const = 0;
+                         Color3& attenuation, Ray& rayScattered) const = 0;
+
+    // Public Data
+    std::shared_ptr<Texture> colorMap;
 };
 
 // Lambertian (Diffuse)
 class Lambertian : public Material
 {
 public:
-    explicit Lambertian(const Color3& a) : albedo(a) { }
+    explicit Lambertian(const Color3& a) : albedo(a) { colorMap = nullptr; }
 
-    virtual bool Scatter(const Ray& rayIn, const HitRecord& hitRecord,
-                         Color3& attenuation,
-                         Ray& rayScattered) const override
+    bool Scatter(const Ray& rayIn, const HitRecord& hitRecord, Color3& attenuation,
+                 Ray& rayScattered) const override
     {
         Vector3f scatterDirection = hitRecord.normal + RandomUnitVector();
 
@@ -35,7 +37,16 @@ public:
             scatterDirection = Normalize(scatterDirection);
 
         rayScattered = Ray(hitRecord.p, scatterDirection);
-        attenuation = albedo;
+
+        // texture color
+        if (colorMap != nullptr)
+        {
+            attenuation = colorMap->Sample(hitRecord.texCoord);
+        }
+        else
+        {
+            attenuation = albedo;
+        }
 
         return true;
     }
@@ -49,9 +60,8 @@ class Metal : public Material
 public:
     explicit Metal(const Color3& a, Float f) : albedo(a), fuzz(f < 1 ? f : 1) { }
 
-    virtual bool Scatter(const Ray& rayIn, const HitRecord& hitRecord,
-                         Color3& attenuation,
-                         Ray& rayScattered) const override
+    bool Scatter(const Ray& rayIn, const HitRecord& hitRecord, Color3& attenuation,
+                 Ray& rayScattered) const override
     {
         Vector3f reflectDir =
             Reflect(rayIn.dir, hitRecord.normal) + fuzz * RandomVectorInUnitSphere();
@@ -72,9 +82,8 @@ class Dielectric : public Material
 public:
     explicit Dielectric(Float indexOfRefraction) : ir(indexOfRefraction) { }
 
-    virtual bool Scatter(const Ray& rayIn, const HitRecord& hitRecord,
-                         Color3& attenuation,
-                         Ray& rayScattered) const override
+    bool Scatter(const Ray& rayIn, const HitRecord& hitRecord, Color3& attenuation,
+                 Ray& rayScattered) const override
     {
         attenuation = Color3(1, 1, 1);
 

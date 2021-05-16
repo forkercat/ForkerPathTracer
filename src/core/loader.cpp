@@ -8,7 +8,10 @@
 #include <sstream>
 #include <string>
 
+#include "material.h"
+#include "tgaimage.h"
 #include "triangle.h"
+#include "texture.h"
 
 const std::string WHITESPACE = " \n\r\t\f\v";
 
@@ -21,9 +24,13 @@ std::string ltrim(const std::string& s)
 /////////////////////////////////////////////////////////////////////////////////
 
 // Constructor
-Loader::Loader(const std::string& filename, bool normalized) : m_MeshTriangles()
+Loader::Loader(const std::string& filename, bool normalized, bool flipTexCoordY)
+    : m_MeshTriangles()
 {
     spdlog::info("Loading OBJ file: {}", filename);
+
+    m_Normalized = normalized;
+    m_FlipTexCoordY = flipTexCoordY;
 
     bool success = loadOBJFile(filename);
 
@@ -37,14 +44,16 @@ Loader::Loader(const std::string& filename, bool normalized) : m_MeshTriangles()
     if (normalized) normalizePositionVertices();
 
     // Info
-    spdlog::info("OBJ Info: v# {}, vt# {}, vn# {}, mesh# {} | normalized: {}", m_Verts.size(),
-                 m_TexCoords.size(), m_Normals.size(), m_MeshTriangles.size(),
-                 normalized);
+    spdlog::info(
+        "OBJ Info: v# {}, vt# {}, vn# {}, mesh# {} | normalized: {}, filpTexCoordY: {}",
+        m_Verts.size(), m_TexCoords.size(), m_Normals.size(), m_MeshTriangles.size(),
+        normalized, flipTexCoordY);
 
     for (auto iter = m_MeshTriangles.begin(); iter != m_MeshTriangles.end(); ++iter)
     {
         std::shared_ptr<MeshTriangle> meshTriangle = iter->second;
-        spdlog::info(">> [{}] #tri {}", meshTriangle->MeshName(), meshTriangle->NumTriangles());
+        spdlog::info(">> [{}] #tri {}", meshTriangle->MeshName(),
+                     meshTriangle->NumTriangles());
     }
 }
 
@@ -62,7 +71,7 @@ bool Loader::loadOBJFile(const std::string& filename)
 
     std::string line;
     std::string meshName;
-
+    std::string materialName;
     while (!in.eof())
     {
         std::getline(in, line);
@@ -77,7 +86,17 @@ bool Loader::loadOBJFile(const std::string& filename)
         // Material File
         if (line.compare(0, 7, "mtllib ") == 0)  // mtllib
         {
-            // TODO
+            std::string mtlFilename;
+            iss >> strTrash >> mtlFilename;
+
+            std::string directory;
+            size_t      slashPos = filename.find_last_of("/");
+
+            // Format: "horizon.obj" or "...../obj/horizon.obj"
+            directory = (slashPos == std::string::npos)
+                            ? ""
+                            : filename.substr(0, slashPos + 1);  // include "/"
+            loadMaterials(directory, mtlFilename);
         }
         // Vertices
         else if (line.compare(0, 2, "v ") == 0)  // v
@@ -111,7 +130,13 @@ bool Loader::loadOBJFile(const std::string& filename)
         }
         else if (line.compare(0, 7, "usemtl ") == 0)  // usemtl
         {
-            // TODO
+            iss >> strTrash >> materialName;  // update current material name
+
+            // At this time, materials are initialized in m_Materials,
+            // but they are not set up in Triangles. We can't do it because
+            // Triangles are not created in a MeshTriangle.
+            // Solution: configure when creating a triangle
+            // Improvement: move material info to MeshTriangle
         }
         // Faces
         else if (line.compare(0, 2, "f ") == 0)  // f
@@ -130,9 +155,9 @@ bool Loader::loadOBJFile(const std::string& filename)
             for (int i = 1; i < vertIndices.size() - 1; ++i)
             {
                 // Make a triangle
-                const Vector3f& v0 = m_Verts[vertIndices[0].x];
-                const Vector3f& v1 = m_Verts[vertIndices[i].x];
-                const Vector3f& v2 = m_Verts[vertIndices[i + 1].x];
+                Vector3f& v0 = m_Verts[vertIndices[0].x];
+                Vector3f& v1 = m_Verts[vertIndices[i].x];
+                Vector3f& v2 = m_Verts[vertIndices[i + 1].x];
 
                 Vector3f e1 = v1 - v0;
                 Vector3f e2 = v2 - v0;
@@ -144,6 +169,7 @@ bool Loader::loadOBJFile(const std::string& filename)
 
                 std::shared_ptr<Triangle> triangle =
                     std::make_shared<Triangle>(v0, v1, v2);
+                triangle->material = m_Materials[materialName];
 
                 // TexCoords
                 triangle->t0 = m_TexCoords[vertIndices[0].y];
@@ -161,6 +187,65 @@ bool Loader::loadOBJFile(const std::string& filename)
     }
 
     return true;
+}
+
+void Loader::loadMaterials(const std::string& directory, const std::string& filename)
+{
+    std::string mtlFilename = directory + filename;
+    spdlog::info("[Loader] Loading MTL file: {}", mtlFilename);
+
+    std::ifstream in;
+    in.open(mtlFilename, std::ifstream::in);
+
+    if (in.fail())
+    {
+        spdlog::error("Cannot open the MTL file: {}", mtlFilename);
+        return;
+    }
+
+    std::string line;
+    std::string materialName;
+    while (!in.eof())
+    {
+        std::getline(in, line);
+        line = ltrim(line);
+        std::istringstream iss(line.c_str());
+
+        // Trash
+        std::string strTrash;
+
+        if (line.compare(0, 7, "newmtl ") == 0)  // newmtl
+        {
+            iss >> strTrash >> materialName;
+            m_Materials[materialName] = std::make_shared<Lambertian>(Color3(1.f));
+        }
+        // Texture Maps
+        else if (line.compare(0, 7, "map_Kd ") == 0)  // map_Kd
+        {
+            std::string filename;
+            iss >> strTrash >> filename;
+            std::string textureFilename = directory + filename;
+            loadTexture(textureFilename, m_Materials[materialName]->colorMap);
+        }
+    }
+}
+
+// Load Texture File
+void Loader::loadTexture(const std::string&        textureFilename,
+                         std::shared_ptr<Texture>& texture)
+{
+    TGAImage image;
+    bool     success = image.ReadTgaFile(textureFilename.c_str());
+
+    if (!success)
+    {
+        spdlog::warn("Failed to load texture: {}", textureFilename);
+        return;
+    }
+
+    if (m_FlipTexCoordY) image.FlipVertically();  // flip y coordinate
+
+    texture = std::make_shared<Texture>(image, Texture::NoWrap, Texture::Linear);
 }
 
 void Loader::normalizePositionVertices()
@@ -198,6 +283,11 @@ void Loader::normalizePositionVertices()
             triangle->v0 = triangle->v0 * scale + translate;
             triangle->v1 = triangle->v1 * scale + translate;
             triangle->v2 = triangle->v2 * scale + translate;
+
+            triangle->e1 = triangle->v1 - triangle->v0;
+            triangle->e2 = triangle->v2 - triangle->v0;
+
+            triangle->normal = Normalize(Cross(triangle->e1, triangle->e2));
         }
     }
 }

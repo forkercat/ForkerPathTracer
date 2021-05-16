@@ -7,16 +7,16 @@
 #include "common.h"
 #include "core.h"
 
-Scene RandomScene()
+Scene RandomScene(int num)
 {
     Scene scene;
 
     auto ground_material = std::make_shared<Lambertian>(Color3(0.5f));
     scene.Add(std::make_shared<Sphere>(Point3f(0, -1000, 0), 1000, ground_material));
 
-    for (int a = -11; a < 11; a++)
+    for (int a = -num; a < num; ++a)
     {
-        for (int b = -11; b < 11; b++)
+        for (int b = -num; b < num; ++b)
         {
             Float   chooseMat = Random01();
             Point3f center(a + 0.9f * Random01(), 0.2f, b + 0.9f * Random01());
@@ -50,14 +50,14 @@ Scene RandomScene()
         }
     }
 
-    auto material1 = std::make_shared<Dielectric>(1.5f);
-    scene.Add(std::make_shared<Sphere>(Point3f(0, 1, 0), 1.f, material1));
-
-    auto material2 = std::make_shared<Lambertian>(Color3(0.4f, 0.2f, 0.1f));
-    scene.Add(std::make_shared<Sphere>(Point3f(-4, 1, 0), 1.f, material2));
-
-    auto material3 = std::make_shared<Metal>(Color3(0.7f, 0.6f, 0.5f), 0.f);
-    scene.Add(std::make_shared<Sphere>(Point3f(4, 1, 0), 1.f, material3));
+    // auto material1 = std::make_shared<Dielectric>(1.5f);
+    // scene.Add(std::make_shared<Sphere>(Point3f(0, 1, 0), 1.f, material1));
+    //
+    // auto material2 = std::make_shared<Lambertian>(Color3(0.4f, 0.2f, 0.1f));
+    // scene.Add(std::make_shared<Sphere>(Point3f(-4, 1, 0), 1.f, material2));
+    //
+    // auto material3 = std::make_shared<Metal>(Color3(0.7f, 0.6f, 0.5f), 0.f);
+    // scene.Add(std::make_shared<Sphere>(Point3f(4, 1, 0), 1.f, material3));
 
     return scene;
 }
@@ -90,10 +90,11 @@ Color3 CastRay(const Ray& ray, const Hittable& world, int depth)
         return Color3(0, 0, 0);
     }
 
-    if (world.Hit(ray, 0.001, Infinity, hitRecord))
+    if (world.Hit(ray, 0.001f, Infinity, hitRecord))
     {
         Ray    rayScattered;
         Color3 attenuation;
+
         if (hitRecord.material->Scatter(ray, hitRecord, attenuation, rayScattered))
         {
             return attenuation * CastRay(rayScattered, world, depth - 1);
@@ -114,11 +115,11 @@ int main()
     spdlog::set_level(spdlog::level::debug);
 
     // Image
-    const Float aspectRatio = 16.f / 9.f;
-    const int   imageWidth = 400;
+    const Float aspectRatio = 16.f / 10.f;
+    const int   imageWidth = 1280;
     const int   imageHeight = static_cast<int>(imageWidth / aspectRatio);
-    const int   samplesPerPixel = 50;
-    const int   maxDepth = 100;
+    const int   samplesPerPixel = 200;
+    const int   maxDepth = 50;
 
     // World
     Scene scene;
@@ -134,7 +135,22 @@ int main()
     // scene.Add(std::make_shared<Sphere>(Point3f(-1.f, 0.f, -1.f), -0.45f, materialLeft));
     // scene.Add(std::make_shared<Sphere>(Point3f(1.f, 0.f, -1.f), 0.5f, materialRight));
 
-    scene = RandomScene();
+    scene = RandomScene(8);
+
+    Loader loader("obj/chalkboard/chalkboard.obj");
+    auto meshTriangles = loader.MeshTriangles();  // vector
+
+    for (const std::shared_ptr<MeshTriangle>& mesh : meshTriangles)
+    {
+        // Transformation
+        mesh->ApplyTransform(Vector3f(0.f, 0.f, 0.f), 0.f, 1.5f);
+
+        // BVH
+        mesh->BuildBVH();
+
+        // mesh->SetMaterial(materialCenter);
+        scene.Add(mesh);
+    }
 
     scene.BuildBVH();
 
@@ -146,13 +162,13 @@ int main()
     // Camera
     // Point3f lookFrom(3, 3, 2);
     // Point3f lookAt(0, 0, -1);
-    // Float   focusDistance = Distance(lookFrom, lookAt);
     Float   aperture = 0.f;
     Float   vfov = 20;
 
-    Point3f lookFrom(13, 2, 3);
-    Point3f lookAt(0, 0, 0);
-    Float   focusDistance = 10.0;
+    Point3f lookFrom(2.f, 2.5, 13);
+    Point3f lookAt(0, 1.6f, 0);
+    Float   focusDistance = Distance(lookFrom, lookAt);
+    // Float   focusDistance = 10.0;
 
     Camera camera(lookFrom, lookAt, Vector3f::Up(), vfov, aspectRatio, aperture,
                   focusDistance);

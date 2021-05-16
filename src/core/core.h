@@ -14,5 +14,8 @@
 #include "scene.h"
 #include "bvh.h"
 #include "loader.h"
+#include "triangle.h"
+#include "texture.h"
+#include "tgaimage.h"
 
 #endif  // CORE_CORE_H_

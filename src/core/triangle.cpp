@@ -32,8 +32,9 @@ bool Triangle::Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRecord)
         {
             hitRecord.t = tNear;
             hitRecord.p = ray.origin + tNear * ray.dir;
-            // hitRecord.material
-            // hitRecord.normal
+            hitRecord.material = material;
+            hitRecord.normal = Normalize((1 - u - v) * n0 + u * n1 + v * n2);
+            hitRecord.texCoord = (1 - u - v) * t0 + u * t1 + v * t2;
             return true;
         }
     }
@@ -72,15 +73,23 @@ bool Triangle::rayIntersectMT(const Ray& ray, float& tNear, float& u, float& v) 
 /////////////////////////////////////////////////////////////////////////////////
 
 // Constructor
-MeshTriangle::MeshTriangle(const std::string& meshName) : m_MeshName(meshName), m_Triangles(), m_Bvh(nullptr)
+MeshTriangle::MeshTriangle(const std::string& meshName)
+    : m_MeshName(meshName), m_Triangles(), m_Bvh(nullptr)
 {
-    // Load OBJ
+}
 
-    // -- set Triangle's material
+void MeshTriangle::ApplyMaterial(const std::shared_ptr<Material>& material)
+{
+    for (auto& triangle : m_Triangles)
+    {
+        triangle->material = material;
+    }
+}
 
-    // Build BVH
-    // spdlog::info("Building MeshTriangle BVH...");
-    // m_Bvh = std::make_shared<BVHAccel>(*this);
+void MeshTriangle::BuildBVH()
+{
+    spdlog::info("[MeshTriangle <{}>] Building BVH...", m_MeshName);
+    m_Bvh = std::make_shared<BVHAccel>(*this);
 }
 
 bool MeshTriangle::Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRecord) const
@@ -107,6 +116,17 @@ bool MeshTriangle::Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRec
         }
 
         return hitAnything;
+    }
+}
+
+void MeshTriangle::ApplyTransform(const Vector3f& translate, Float rotateY, Float scale)
+{
+    for (auto& triangle : m_Triangles)
+    {
+        // triangle->v0 = Transform(triangle->v0, translate, rotateY, scale);
+        // triangle->v1 = Transform(triangle->v1, translate, rotateY, scale);
+        // triangle->v2 = Transform(triangle->v2, translate, rotateY, scale);
+        triangle->ApplyTransform(translate, rotateY, scale);
     }
 }
 

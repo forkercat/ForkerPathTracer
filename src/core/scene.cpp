@@ -10,7 +10,7 @@
 
 void Scene::BuildBVH()
 {
-    spdlog::info("Building BVH...");
+    spdlog::info("[Scene] Building BVH...");
     m_Bvh = std::make_shared<BVHAccel>(*this);
 }
 

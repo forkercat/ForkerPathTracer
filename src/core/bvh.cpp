@@ -35,7 +35,7 @@ BVHAccel::BVHAccel(const std::vector<std::shared_ptr<Hittable>>& objects)
     int mins = ((int)diff / 60) - (hrs * 60);
     int secs = ((int)diff - (hrs * 3600) - (mins * 60));
 
-    spdlog::info("BVH Generation Complete: {} hrs, {} mins, {} secs\n", hrs, mins, secs);
+    spdlog::info("[BVHAccel] BVH Generation Complete: {} hrs, {} mins, {} secs", hrs, mins, secs);
 }
 
 // Public Methods

@@ -15,29 +15,42 @@
 
 class MeshTriangle;
 class Triangle;
+class Material;
+class Texture;
 
 class Loader
 {
 public:
     // Constructor
-    explicit Loader(const std::string& filename, bool normalized = false);
+    explicit Loader(const std::string& filename, bool normalized = false,
+                    bool flipTexCoordY = true);
 
-    std::map<std::string, std::shared_ptr<MeshTriangle>> MeshTriangles() const
+    std::vector<std::shared_ptr<MeshTriangle>> MeshTriangles() const  // expensive
     {
-        return m_MeshTriangles;
+        std::vector<std::shared_ptr<MeshTriangle>> v;
+        for (const auto& pair : m_MeshTriangles)
+        {
+            v.push_back(pair.second);
+        }
+        return v;
     }
 
 private:
     bool loadOBJFile(const std::string& filename);
+    void loadMaterials(const std::string& directory, const std::string& filename);
+    void loadTexture(const std::string& textureFilename, std::shared_ptr<Texture>& texture);
     void normalizePositionVertices();
 
     // Private Data
     std::map<std::string, std::shared_ptr<MeshTriangle>> m_MeshTriangles;
-    // std::map<std::string, std::shared_ptr<Material>>     m_Materials;
+    std::map<std::string, std::shared_ptr<Material>>     m_Materials;
 
     std::vector<Vector3f> m_Verts;
     std::vector<Vector2f> m_TexCoords;
     std::vector<Vector3f> m_Normals;
+
+    bool m_Normalized;
+    bool m_FlipTexCoordY;
 };
 
 #endif  // FORKERPATHTRACER_SRC_CORE_LOADER_H_

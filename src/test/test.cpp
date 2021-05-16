@@ -18,8 +18,10 @@ int main()
     spdlog::set_level(spdlog::level::debug);
 
     Loader loader("obj/mary/mary.obj");
+    loader.BuildBVH();
 
-    // auto meshTriangles = loader.MeshTriangles();
+    auto meshTriangles = loader.MeshTriangles();
+
 
     spdlog::debug("cool!");
 

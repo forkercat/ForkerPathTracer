@@ -486,6 +486,15 @@ inline Vector3<T> Lerp(Float t, const Vector3<T>& v1, const Vector3<T>& v2)
 }
 
 template <typename T>
+inline Vector2<T> Clamp(const Vector2<T>& val, T min, T max)
+{
+    Vector2<T> ret;
+    ret.x = Clamp(val.x, min, max);
+    ret.y = Clamp(val.y, min, max);
+    return ret;
+}
+
+template <typename T>
 inline Vector3<T> Clamp(const Vector3<T>& val, T min, T max)
 {
     Vector3<T> ret;
@@ -496,9 +505,53 @@ inline Vector3<T> Clamp(const Vector3<T>& val, T min, T max)
 }
 
 template <typename T>
+inline Vector2<T> Clamp01(const Vector2<T>& val)
+{
+    return Clamp(val, 0.f, 1.f);
+}
+
+template <typename T>
 inline Vector3<T> Clamp01(const Vector3<T>& val)
 {
-    Clamp(val, 0.f, 1.f);
+    return Clamp(val, 0.f, 1.f);
+}
+
+inline Vector3f Transform(const Vector3f& v, const Vector3f& translate, Float rotateY = 0.f, Float scale = 1.f)
+{
+    Float rad = Radians(rotateY);
+    Float cosTheta = std::cos(rad);
+    Float sinTheta = std::sin(rad);
+
+    Vector3f ret;
+
+    // Scale
+    ret = v * scale;
+
+    // Rotate
+    ret.x = cosTheta * ret.x + sinTheta * ret.z;
+    ret.y = ret.y;
+    ret.z = -sinTheta * ret.x + cosTheta * ret.z;
+
+    // Translate
+    ret += translate;
+
+    return ret;
+}
+
+inline Vector3f TransformNormal(const Vector3f& normal, Float rotateY = 0.f)
+{
+    Float rad = Radians(rotateY);
+    Float cosTheta = std::cos(rad);
+    Float sinTheta = std::sin(rad);
+
+    Vector3f ret;
+
+    // Rotate
+    ret.x = cosTheta * normal.x + sinTheta * normal.z;
+    ret.y = normal.y;
+    ret.z = -sinTheta * normal.x + cosTheta * normal.z;
+
+    return ret;
 }
 
 // Random
