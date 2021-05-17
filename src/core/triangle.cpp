@@ -123,11 +123,14 @@ bool MeshTriangle::Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRec
 
 void MeshTriangle::ApplyTransform(const Vector3f& translate, Float rotateY, Float scale)
 {
+    if (scale == 0.f)
+    {
+        spdlog::warn("Scale cannot be 0.f. Set to 1.f instead.");
+        scale = 1.f;
+    }
+
     for (auto& triangle : m_Triangles)
     {
-        // triangle->v0 = Transform(triangle->v0, translate, rotateY, scale);
-        // triangle->v1 = Transform(triangle->v1, translate, rotateY, scale);
-        // triangle->v2 = Transform(triangle->v2, translate, rotateY, scale);
         triangle->ApplyTransform(translate, rotateY, scale);
     }
 }

@@ -13,10 +13,12 @@ class Sphere : public Hittable
 {
 public:
     Sphere() = default;
-    Sphere(const Point3f& cen, Float rad, std::shared_ptr<Material> mat)
-        : center(cen), radius(rad), material(std::move(mat)){};
+    Sphere(const Point3f& cen, Float rad, const std::shared_ptr<Material>& mat)
+        : center(cen), radius(rad), material(mat){};
 
     bool Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRecord) const override;
+
+    void ApplyTransform(const Vector3f &translate, Float rotateY, Float scale) override;
 
     Bounds3 WorldBound() const override
     {
@@ -28,6 +30,12 @@ public:
     Float                radius;
     std::shared_ptr<Material> material;
 };
+
+void Sphere::ApplyTransform(const Vector3f& translate, Float rotateY, Float scale)
+{
+    center += translate;
+    radius *= scale;
+}
 
 bool Sphere::Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRecord) const
 {

@@ -34,7 +34,7 @@ public:
             return v2;
     }
 
-    void ApplyTransform(const Vector3f& translate, Float rotateY, Float scale)
+    void ApplyTransform(const Vector3f &translate, Float rotateY, Float scale) override
     {
         v0 = Transform(v0, translate, rotateY, scale);
         v1 = Transform(v1, translate, rotateY, scale);
@@ -94,12 +94,11 @@ public:
 
     void ApplyMaterial(const std::shared_ptr<Material>& material);
 
-    void ApplyTransform(const Vector3f& translate, Float rotateY = 0.f,
-                        Float scale = 1.f);
-
     void BuildBVH();
 
     bool Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRecord) const override;
+    void ApplyTransform(const Vector3f &translate, Float rotateY, Float scale) override;
+
     Bounds3 WorldBound() const override;
 
 private:

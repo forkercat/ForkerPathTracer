@@ -146,7 +146,7 @@ int main()
 
     // Image
     const Float aspectRatio = 16.f / 10.f;
-    const int   imageWidth = 720;
+    const int   imageWidth = 300;
     const int   imageHeight = static_cast<int>(imageWidth / aspectRatio);
     const int   samplesPerPixel = 100;
     const int   maxDepth = 50;
@@ -165,17 +165,17 @@ int main()
     // scene.Add(std::make_shared<Sphere>(Point3f(-1.f, 0.f, -1.f), -0.45f, materialLeft));
     // scene.Add(std::make_shared<Sphere>(Point3f(1.f, 0.f, -1.f), 0.5f, materialRight));
 
-    scene = RandomScene(8);
+    scene = RandomScene(3);
     scene.Add(std::make_shared<Rectangle>(-1.f, 1.f, -1.f, 1.f, 0.f, materialCenter));
 
-    Loader loader("obj/mary/mary.obj");
+    Loader loader("obj/chalkboard/chalkboard.obj");
     auto meshTriangles = loader.MeshTriangles();  // vector
 
     for (const std::shared_ptr<MeshTriangle>& mesh : meshTriangles)
     {
         // Transformation
-        // mesh->ApplyTransform(Vector3f(0.f, 0.f, 0.f), 180.f, 1.5f);
-        mesh->ApplyTransform(Vector3f(0.f, 0.f, 0.f), 0.f);
+        mesh->ApplyTransform(Vector3f(0.f, 0.f, 0.f), 180.f, 1.5f);
+        // mesh->ApplyTransform(Vector3f(0.f, 0.f, 0.f), 0.f);
 
         // BVH
         mesh->BuildBVH();

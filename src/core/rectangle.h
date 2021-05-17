@@ -13,17 +13,22 @@ class Rectangle : public Hittable
 public:
     Rectangle() = default;
     Rectangle(Float x0, Float x1, Float y0, Float y1, Float z_,
-              std::shared_ptr<Material> mat)
+              const std::shared_ptr<Material>& mat)
         : xmin(x0), xmax(x1), ymin(y0), ymax(y1), z(z_), material(mat)
     {
     }
 
     bool Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRecord) const override;
 
+    void ApplyTransform(const Vector3f &translate, Float rotateY, Float scale) override
+    {
+
+    }
+
     Bounds3 WorldBound() const override
     {
-        return Bounds3(Point3f(xmin, ymin, z - 0.0001f),
-                       Point3f(xmax, ymax, z + 0.0001f));
+        return Bounds3(Point3f(xmin, ymin, z - 0.01f),
+                       Point3f(xmax, ymax, z + 0.01f));
     }
 
     // Data
