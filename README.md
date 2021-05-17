@@ -1,6 +1,6 @@
 # ForkerPathTracer: CPU-Based Software Path Tracer 🐰
 
-Implemented a CPU-based software path tracer that generates high-quality image >_<
+Implemented a CPU-based software path tracer that generates high-quality image with BVH and multithreading >_<
 
 ![](https://raw.githubusercontent.com/junhaowww/StorageBaseWithoutCatNotice/main/ForkerPathTracerPic/ForkerPathTracer_Header_1.jpg)
 
@@ -43,6 +43,7 @@ cmake .. && make
 
 ```console
 $ ./ForkerPathTracer
+[info] #Threads: 8
 [info] Loading OBJ file: obj/chalkboard/chalkboard.obj
 [info] [Loader] Loading MTL file: obj/chalkboard/chalkboard.mtl
 [info] OBJ Info: v# 1120, vt# 1752, vn# 2504, mesh# 1 | normalized: false, filpTexCoordY: true
