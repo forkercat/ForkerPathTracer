@@ -2,10 +2,14 @@
 #include <spdlog/stopwatch.h>
 
 #include <fstream>
+#include <future>
 #include <iostream>
+#include <thread>
 
 #include "common.h"
 #include "core.h"
+
+#define NUM_THREADS 8
 
 Scene RandomScene(int num)
 {
@@ -108,6 +112,40 @@ Color3 CastRay(const Ray& ray, const Hittable& world, int depth)
     return Lerp(t, Color3(1.f, 1.f, 1.f), Color3(0.5f, 0.7f, 1.f));
 }
 
+struct ThreadInfo
+{
+    int startX, endX, startY, endY;
+    int imageWidth, imageHeight;
+    int samplesPerPixel;
+    int maxDepth;
+};
+
+struct SampleInfo
+{
+    int x, y;
+    int numSamples, maxDepth;
+    int imageWidth, imageHeight;
+};
+
+Color3 Sample(SampleInfo info, Camera& camera, Scene& scene)
+{
+    Color3 color(0.f);
+    for (int s = 0; s < info.numSamples; ++s)
+    {
+        Float xOffset = info.x + Random01();
+        Float yOffset = info.y + Random01();
+
+        // Map To [0, 1]
+        Float u = xOffset / (info.imageWidth - 1);
+        Float v = yOffset / (info.imageHeight - 1);
+
+        Ray ray = camera.GetRay(u, v);
+        color += CastRay(ray, scene, info.maxDepth);
+    }
+
+    return color;
+}
+
 int main()
 {
     // Spdlog
@@ -116,9 +154,9 @@ int main()
 
     // Image
     const Float aspectRatio = 16.f / 10.f;
-    const int   imageWidth = 1280;
+    const int   imageWidth = 1600;
     const int   imageHeight = static_cast<int>(imageWidth / aspectRatio);
-    const int   samplesPerPixel = 200;
+    const int   samplesPerPixel = 400;
     const int   maxDepth = 50;
 
     // World
@@ -143,7 +181,8 @@ int main()
     for (const std::shared_ptr<MeshTriangle>& mesh : meshTriangles)
     {
         // Transformation
-        mesh->ApplyTransform(Vector3f(0.f, 0.f, 0.f), 0.f, 1.5f);
+        mesh->ApplyTransform(Vector3f(0.f, 0.f, 0.f), 180.f, 1.5f);
+        // mesh->ApplyTransform(Vector3f(0.f, 0.f, 0.f), 0.f);
 
         // BVH
         mesh->BuildBVH();
@@ -179,24 +218,44 @@ int main()
 
     spdlog::stopwatch timer;
 
+    // Configure Sample Info
+    SampleInfo sampleInfo;
+    sampleInfo.maxDepth = maxDepth;
+    sampleInfo.imageWidth = imageWidth;
+    sampleInfo.imageHeight = imageHeight;
+
+    assert(NUM_THREADS > 0);
+    spdlog::info("#Threads: {}", NUM_THREADS);
+
+    std::future<Color3> sampleColors[NUM_THREADS];
+
     for (int j = imageHeight - 1; j >= 0; --j)
     {
         for (int i = 0; i < imageWidth; ++i)
         {
-            Color3 color(0, 0, 0);
+            // Sending out multiple samples within a pixel
 
-            for (int s = 0; s < samplesPerPixel; ++s)
+            int numSamplesPerThread = (int) std::round(samplesPerPixel / (Float)NUM_THREADS);
+
+            // Update Sample Info
+            sampleInfo.x = i;
+            sampleInfo.y = j;
+
+            // Allocation
+            for (int tid = 0; tid < NUM_THREADS; ++tid)
             {
-                Float xOffset = i + Random01();
-                Float yOffset = j + Random01();
-
-                // Map To [0, 1]
-                Float u = xOffset / (imageWidth - 1);
-                Float v = yOffset / (imageHeight - 1);
-
-                Ray ray = camera.GetRay(u, v);
-                color += CastRay(ray, scene, maxDepth);
+                sampleInfo.numSamples = numSamplesPerThread;
+                sampleColors[tid] =
+                    std::async(Sample, sampleInfo, std::ref(camera), std::ref(scene));
             }
+
+            // Join
+            Color3 color(0.f);
+            for (int tid = 0; tid < NUM_THREADS; ++tid)
+            {
+                color += sampleColors[tid].get();
+            }
+
             // Output
             WriteColor(outfile, color, samplesPerPixel);
         }
