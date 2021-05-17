@@ -17,5 +17,6 @@
 #include "triangle.h"
 #include "texture.h"
 #include "tgaimage.h"
+#include "rectangle.h"
 
 #endif  // CORE_CORE_H_

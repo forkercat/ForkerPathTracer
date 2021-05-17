@@ -112,14 +112,6 @@ Color3 CastRay(const Ray& ray, const Hittable& world, int depth)
     return Lerp(t, Color3(1.f, 1.f, 1.f), Color3(0.5f, 0.7f, 1.f));
 }
 
-struct ThreadInfo
-{
-    int startX, endX, startY, endY;
-    int imageWidth, imageHeight;
-    int samplesPerPixel;
-    int maxDepth;
-};
-
 struct SampleInfo
 {
     int x, y;
@@ -154,9 +146,9 @@ int main()
 
     // Image
     const Float aspectRatio = 16.f / 10.f;
-    const int   imageWidth = 1600;
+    const int   imageWidth = 720;
     const int   imageHeight = static_cast<int>(imageWidth / aspectRatio);
-    const int   samplesPerPixel = 400;
+    const int   samplesPerPixel = 100;
     const int   maxDepth = 50;
 
     // World
@@ -174,15 +166,16 @@ int main()
     // scene.Add(std::make_shared<Sphere>(Point3f(1.f, 0.f, -1.f), 0.5f, materialRight));
 
     scene = RandomScene(8);
+    scene.Add(std::make_shared<Rectangle>(-1.f, 1.f, -1.f, 1.f, 0.f, materialCenter));
 
-    Loader loader("obj/chalkboard/chalkboard.obj");
+    Loader loader("obj/mary/mary.obj");
     auto meshTriangles = loader.MeshTriangles();  // vector
 
     for (const std::shared_ptr<MeshTriangle>& mesh : meshTriangles)
     {
         // Transformation
-        mesh->ApplyTransform(Vector3f(0.f, 0.f, 0.f), 180.f, 1.5f);
-        // mesh->ApplyTransform(Vector3f(0.f, 0.f, 0.f), 0.f);
+        // mesh->ApplyTransform(Vector3f(0.f, 0.f, 0.f), 180.f, 1.5f);
+        mesh->ApplyTransform(Vector3f(0.f, 0.f, 0.f), 0.f);
 
         // BVH
         mesh->BuildBVH();

@@ -17,7 +17,11 @@ public:
         : center(cen), radius(rad), material(std::move(mat)){};
 
     bool Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRecord) const override;
-    Bounds3 WorldBound() const override;
+
+    Bounds3 WorldBound() const override
+    {
+        return Bounds3(center - Vector3f(radius), center + Vector3f(radius));
+    }
 
     // Data
     Point3f              center;
@@ -53,11 +57,6 @@ bool Sphere::Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRecord) c
     hitRecord.material = material;
 
     return true;
-}
-
-Bounds3 Sphere::WorldBound() const
-{
-    return Bounds3(center - Vector3f(radius), center + Vector3f(radius));
 }
 
 #endif  // CORE_SPHERE_H_

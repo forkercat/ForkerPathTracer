@@ -30,10 +30,12 @@ bool Triangle::Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRecord)
     {
         if (tNear > tMin && tNear < tMax)
         {
+            Vector3f n = Normalize((1 - u - v) * n0 + u * n1 + v * n2);
+            hitRecord.SetFrontFace(ray, n);
+
             hitRecord.t = tNear;
             hitRecord.p = ray.origin + tNear * ray.dir;
             hitRecord.material = material;
-            hitRecord.normal = Normalize((1 - u - v) * n0 + u * n1 + v * n2);
             hitRecord.texCoord = (1 - u - v) * t0 + u * t1 + v * t2;
             return true;
         }
