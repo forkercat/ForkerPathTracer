@@ -28,10 +28,10 @@ cmake .. && make
 ## Features ⭐
 
 - [x] Path Tracing
-- Supported Primitives
+- [x] Supported Primitives
     - [x] Sphere
     - [x] Triangle (Möller–Trumbore algorithm)
-- Supported Materials
+- [x] Supported Materials
     - [x] Lambertian
     - [x] Metal
     - [x] Dielectric
