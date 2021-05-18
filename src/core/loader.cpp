@@ -286,8 +286,6 @@ void Loader::normalizePositionVertices()
 
             triangle->e1 = triangle->v1 - triangle->v0;
             triangle->e2 = triangle->v2 - triangle->v0;
-
-            triangle->normal = Normalize(Cross(triangle->e1, triangle->e2));
         }
     }
 }

@@ -41,7 +41,7 @@ public:
     virtual bool    Hit(const Ray& ray, Float tMin, Float tMax,
                         HitRecord& hitRecord) const = 0;
     virtual Bounds3 WorldBound() const = 0;
-    virtual void ApplyTransform(const Vector3f& translate, Float rotateY, Float scale) { }
+    virtual void ApplyTransform(const Vector3f& translate, const Vector3f& rotate, Float scale) { }
 };
 
 #endif  // CORE_HITTABLE_H_

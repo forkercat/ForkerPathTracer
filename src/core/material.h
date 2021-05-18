@@ -12,11 +12,32 @@
 class Material
 {
 public:
-    virtual bool Scatter(const Ray& rayIn, const HitRecord& hitRecord,
-                         Color3& attenuation, Ray& rayScattered) const = 0;
+    virtual bool   Scatter(const Ray& rayIn, const HitRecord& hitRecord,
+                           Color3& attenuation, Ray& rayScattered) const = 0;
+    virtual Color3 Emit() const { return Color3(0.f); }
 
     // Public Data
     std::shared_ptr<Texture> colorMap;
+};
+
+// Emissive
+class Emissive : public Material
+{
+public:
+    explicit Emissive(const Color3& a) : albedo(a) { }
+
+    bool Scatter(const Ray& rayIn, const HitRecord& hitRecord, Color3& attenuation,
+                 Ray& rayScattered) const override
+    {
+        return false;
+    }
+
+    Color3 Emit() const override
+    {
+        return albedo;
+    }
+
+    Color3 albedo;
 };
 
 // Lambertian (Diffuse)

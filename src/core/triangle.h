@@ -24,30 +24,33 @@ public:
     // Inlines
     Bounds3 WorldBound() const override { return Union(Bounds3(v0, v1), v2); }
 
-    Point3f GetVertex(int index) const
+    void SetNormals(const Vector3f& n0_, const Vector3f& n1_, const Vector3f& n2_)
     {
-        if (index == 0)
-            return v0;
-        else if (index == 1)
-            return v1;
-        else
-            return v2;
+        n0 = n0_;
+        n1 = n1_;
+        n2 = n2_;
     }
 
-    void ApplyTransform(const Vector3f &translate, Float rotateY, Float scale) override
+    void SetTexCoords(const Vector2f& t0_, const Vector2f& t1_, const Vector2f& t2_)
     {
-        v0 = Transform(v0, translate, rotateY, scale);
-        v1 = Transform(v1, translate, rotateY, scale);
-        v2 = Transform(v2, translate, rotateY, scale);
+        t0 = t0_;
+        t1 = t1_;
+        t2 = t2_;
+    }
+
+    void ApplyTransform(const Vector3f& translate, const Vector3f& rotate, Float scale) override
+    {
+        v0 = Transform(v0, translate, rotate, scale);
+        v1 = Transform(v1, translate, rotate, scale);
+        v2 = Transform(v2, translate, rotate, scale);
 
         e1 = v1 - v0;
         e2 = v2 - v0;
-        normal = Normalize(Cross(e1, e2));
 
         // Vertex Normal
-        n0 = Normalize(TransformNormal(n0, rotateY));
-        n1 = Normalize(TransformNormal(n1, rotateY));
-        n2 = Normalize(TransformNormal(n2, rotateY));
+        n0 = Normalize(TransformNormal(n0, rotate));
+        n1 = Normalize(TransformNormal(n1, rotate));
+        n2 = Normalize(TransformNormal(n2, rotate));
     }
 
     // Public Data
@@ -55,7 +58,6 @@ public:
     Vector3f                  e1, e2;
     Vector2f                  t0, t1, t2;  // texture coords
     Vector3f                  n0, n1, n2;  // vertex normals
-    Vector3f                  normal;
     std::shared_ptr<Material> material;
 
 private:
@@ -97,7 +99,7 @@ public:
     void BuildBVH();
 
     bool Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRecord) const override;
-    void ApplyTransform(const Vector3f &translate, Float rotateY, Float scale) override;
+    void ApplyTransform(const Vector3f &translate, const Vector3f& rotate, Float scale) override;
 
     Bounds3 WorldBound() const override;
 

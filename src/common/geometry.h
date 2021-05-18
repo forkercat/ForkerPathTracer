@@ -516,21 +516,39 @@ inline Vector3<T> Clamp01(const Vector3<T>& val)
     return Clamp(val, 0.f, 1.f);
 }
 
-inline Vector3f Transform(const Vector3f& v, const Vector3f& translate, Float rotateY = 0.f, Float scale = 1.f)
+inline Vector3f Transform(const Vector3f& v, const Vector3f& translate, const Vector3f& rotate = Vector3f(0.f), Float scale = 1.f)
 {
-    Float rad = Radians(rotateY);
-    Float cosTheta = std::cos(rad);
-    Float sinTheta = std::sin(rad);
+    Float radX = Radians(rotate.x);
+    Float cosThetaX = std::cos(radX);
+    Float sinThetaX = std::sin(radX);
+
+    Float radY = Radians(rotate.y);
+    Float cosThetaY = std::cos(radY);
+    Float sinThetaY = std::sin(radY);
+
+    Float radZ = Radians(rotate.z);
+    Float cosThetaZ = std::cos(radZ);
+    Float sinThetaZ = std::sin(radZ);
 
     Vector3f ret;
 
     // Scale
     ret = v * scale;
 
-    // Rotate
-    ret.x = cosTheta * ret.x + sinTheta * ret.z;
+    // Rotate X
+    ret.x = ret.x;
+    ret.y = cosThetaX * ret.y - sinThetaX * ret.z;
+    ret.z = sinThetaX * ret.y + cosThetaX * ret.z;
+
+    // Rotate Y
+    ret.x = cosThetaY * ret.x + sinThetaY * ret.z;
     ret.y = ret.y;
-    ret.z = -sinTheta * ret.x + cosTheta * ret.z;
+    ret.z = -sinThetaY * ret.x + cosThetaY * ret.z;
+
+    // Rotate Z
+    ret.x = cosThetaZ * ret.x - sinThetaZ * ret.y;
+    ret.y = sinThetaZ * ret.x + cosThetaZ * ret.y;
+    ret.z = ret.z;
 
     // Translate
     ret += translate;
@@ -538,18 +556,36 @@ inline Vector3f Transform(const Vector3f& v, const Vector3f& translate, Float ro
     return ret;
 }
 
-inline Vector3f TransformNormal(const Vector3f& normal, Float rotateY = 0.f)
+inline Vector3f TransformNormal(const Vector3f& normal, const Vector3f& rotate = Vector3f(0.f))
 {
-    Float rad = Radians(rotateY);
-    Float cosTheta = std::cos(rad);
-    Float sinTheta = std::sin(rad);
+    Float radX = Radians(rotate.x);
+    Float cosThetaX = std::cos(radX);
+    Float sinThetaX = std::sin(radX);
+
+    Float radY = Radians(rotate.y);
+    Float cosThetaY = std::cos(radY);
+    Float sinThetaY = std::sin(radY);
+
+    Float radZ = Radians(rotate.z);
+    Float cosThetaZ = std::cos(radZ);
+    Float sinThetaZ = std::sin(radZ);
 
     Vector3f ret;
 
-    // Rotate
-    ret.x = cosTheta * normal.x + sinTheta * normal.z;
+    // Rotate X
+    ret.x = normal.x;
+    ret.y = cosThetaX * normal.y - sinThetaX * normal.z;
+    ret.z = sinThetaX * normal.y + cosThetaX * normal.z;
+
+    // Rotate Y
+    ret.x = cosThetaY * normal.x + sinThetaY * normal.z;
     ret.y = normal.y;
-    ret.z = -sinTheta * normal.x + cosTheta * normal.z;
+    ret.z = -sinThetaY * normal.x + cosThetaY * normal.z;
+
+    // Rotate Z
+    ret.x = cosThetaZ * normal.x - sinThetaZ * normal.y;
+    ret.y = sinThetaZ * normal.x + cosThetaZ * normal.y;
+    ret.z = normal.z;
 
     return ret;
 }

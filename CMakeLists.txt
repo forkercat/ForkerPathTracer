@@ -50,7 +50,7 @@ set(CORE_HEADERS
     src/core/loader.h
     src/core/texture.h
     src/core/tgaimage.h
-    src/core/rectangle.h)
+    src/core/plane.h)
 
 add_library(core STATIC
     ${CORE_SOURCE}

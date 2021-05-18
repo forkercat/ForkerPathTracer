@@ -18,7 +18,7 @@ public:
 
     bool Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRecord) const override;
 
-    void ApplyTransform(const Vector3f &translate, Float rotateY, Float scale) override;
+    void ApplyTransform(const Vector3f &translate, const Vector3f& rotate, Float scale) override;
 
     Bounds3 WorldBound() const override
     {
@@ -31,7 +31,7 @@ public:
     std::shared_ptr<Material> material;
 };
 
-void Sphere::ApplyTransform(const Vector3f& translate, Float rotateY, Float scale)
+void Sphere::ApplyTransform(const Vector3f& translate, const Vector3f& rotate, Float scale)
 {
     center += translate;
     radius *= scale;

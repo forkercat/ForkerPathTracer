@@ -97,19 +97,23 @@ Color3 CastRay(const Ray& ray, const Hittable& world, int depth)
     if (world.Hit(ray, 0.001f, Infinity, hitRecord))
     {
         Ray    rayScattered;
-        Color3 attenuation;
+        Color3 emitted = hitRecord.material->Emit();
+        Color3 attenuation = Color3(0.f);
 
-        if (hitRecord.material->Scatter(ray, hitRecord, attenuation, rayScattered))
+        // No Scatter - Return Emissive
+        if (!hitRecord.material->Scatter(ray, hitRecord, attenuation, rayScattered))
         {
-            return attenuation * CastRay(rayScattered, world, depth - 1);
+            return emitted;
         }
 
-        return Color3(0, 0, 0);
+        return emitted + attenuation * CastRay(rayScattered, world, depth - 1);
     }
 
     // Background
-    Float t = 0.5f * (ray.dir.y + 1.f);
-    return Lerp(t, Color3(1.f, 1.f, 1.f), Color3(0.5f, 0.7f, 1.f));
+    // Float t = 0.5f * (ray.dir.y + 1.f);
+    // return Lerp(t, Color3(1.f, 1.f, 1.f), Color3(0.5f, 0.7f, 1.f));
+    // return Color3(1.f);
+    return Color3(0.f);
 }
 
 struct SampleInfo
@@ -146,27 +150,23 @@ int main()
 
     // Image
     const Float aspectRatio = 16.f / 10.f;
-    const int   imageWidth = 300;
+    const int   imageWidth = 1280;
     const int   imageHeight = static_cast<int>(imageWidth / aspectRatio);
-    const int   samplesPerPixel = 100;
+    const int   samplesPerPixel = 200;
     const int   maxDepth = 50;
 
-    // World
+    // Scene
     Scene scene;
+    // auto materialCenter = std::make_shared<Lambertian>(Color3(0.1f, 0.2f, 0.5f));
+    auto materialEmissive = std::make_shared<Emissive>(Color3(10.f));
 
-    auto materialGround = std::make_shared<Lambertian>(Color3(0.8f, 0.8f, 0.f));
-    auto materialCenter = std::make_shared<Lambertian>(Color3(0.1f, 0.2f, 0.5f));
-    auto materialLeft = std::make_shared<Dielectric>(1.5f);
-    auto materialRight = std::make_shared<Metal>(Color3(0.8f, 0.6f, 0.2f), 0.f);
-
-    // scene.Add(std::make_shared<Sphere>(Point3f(0.f, -100.5f, -1.f), 100, materialGround));
-    // scene.Add(std::make_shared<Sphere>(Point3f(0.f, 0.f, -1.f), 0.5f, materialCenter));
-    // scene.Add(std::make_shared<Sphere>(Point3f(-1.f, 0.f, -1.f), 0.5f, materialLeft));
-    // scene.Add(std::make_shared<Sphere>(Point3f(-1.f, 0.f, -1.f), -0.45f, materialLeft));
-    // scene.Add(std::make_shared<Sphere>(Point3f(1.f, 0.f, -1.f), 0.5f, materialRight));
-
+    // Sphere
     scene = RandomScene(3);
-    scene.Add(std::make_shared<Rectangle>(-1.f, 1.f, -1.f, 1.f, 0.f, materialCenter));
+
+    // Plane
+    auto plane = std::make_shared<Plane>(2.f, 2.f, materialEmissive);
+    plane->ApplyTransform(Vector3f(0, 3.7f, 0), Vector3f(180, 0, 0), 1.f);
+    scene.Add(plane);
 
     Loader loader("obj/chalkboard/chalkboard.obj");
     auto meshTriangles = loader.MeshTriangles();  // vector
@@ -174,13 +174,12 @@ int main()
     for (const std::shared_ptr<MeshTriangle>& mesh : meshTriangles)
     {
         // Transformation
-        mesh->ApplyTransform(Vector3f(0.f, 0.f, 0.f), 180.f, 1.5f);
+        mesh->ApplyTransform(Vector3f(0.f, 0.f, 0.f), Vector3f(0, 180, 0), 1.5f);
         // mesh->ApplyTransform(Vector3f(0.f, 0.f, 0.f), 0.f);
 
         // BVH
         mesh->BuildBVH();
 
-        // mesh->SetMaterial(materialCenter);
         scene.Add(mesh);
     }
 

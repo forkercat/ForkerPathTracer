@@ -27,14 +27,21 @@ cmake .. && make
 
 ## Features ⭐
 
+![](https://raw.githubusercontent.com/junhaowww/StorageBaseWithoutCatNotice/main/ForkerPathTracerPic/ForkerPathTracer_Light.jpg)
+
 - [x] Path Tracing
 - [x] Supported Primitives
     - [x] Sphere
+    - [x] Plane
     - [x] Triangle (Möller–Trumbore algorithm)
+- [x] Transformations (Translate, Rotate, Scale)
 - [x] Supported Materials
     - [x] Lambertian
     - [x] Metal
     - [x] Dielectric
+    - [x] Emissive
+- [x] Light
+    - [x] Area Light
 - [x] Anti-Aliasing
 - [x] Support Bounding Volume Hierarchy (BVH) acceleration
 - [x] Multithreading (`std::thread` and `std::future`)

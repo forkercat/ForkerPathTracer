@@ -5,18 +5,18 @@
 #ifndef CORE_CORE_H_
 #define CORE_CORE_H_
 
+#include "bounds.h"
+#include "bvh.h"
 #include "camera.h"
 #include "hittable.h"
-#include "sphere.h"
-#include "material.h"
-#include "ray.h"
-#include "bounds.h"
-#include "scene.h"
-#include "bvh.h"
 #include "loader.h"
-#include "triangle.h"
+#include "material.h"
+#include "plane.h"
+#include "ray.h"
+#include "scene.h"
+#include "sphere.h"
 #include "texture.h"
 #include "tgaimage.h"
-#include "rectangle.h"
+#include "triangle.h"
 
 #endif  // CORE_CORE_H_

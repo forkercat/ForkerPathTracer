@@ -18,8 +18,6 @@ Triangle::Triangle(const Point3f& v0, const Point3f& v1, const Point3f& v2)
 {
     e1 = v1 - v0;
     e2 = v2 - v0;
-
-    normal = Normalize(Cross(e1, e2));
 }
 
 bool Triangle::Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRecord) const
@@ -121,7 +119,7 @@ bool MeshTriangle::Hit(const Ray& ray, Float tMin, Float tMax, HitRecord& hitRec
     }
 }
 
-void MeshTriangle::ApplyTransform(const Vector3f& translate, Float rotateY, Float scale)
+void MeshTriangle::ApplyTransform(const Vector3f& translate, const Vector3f& rotate, Float scale)
 {
     if (scale == 0.f)
     {
@@ -131,7 +129,7 @@ void MeshTriangle::ApplyTransform(const Vector3f& translate, Float rotateY, Floa
 
     for (auto& triangle : m_Triangles)
     {
-        triangle->ApplyTransform(translate, rotateY, scale);
+        triangle->ApplyTransform(translate, rotate, scale);
     }
 }
 
