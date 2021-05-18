@@ -2,9 +2,7 @@
 
 Implemented a CPU-based software path tracer that generates high-quality image with BVH and multithreading >_<
 
-![](https://raw.githubusercontent.com/junhaowww/StorageBaseWithoutCatNotice/main/ForkerPathTracerPic/ForkerPathTracer_Header_1.jpg)
-
-![](https://raw.githubusercontent.com/junhaowww/StorageBaseWithoutCatNotice/main/ForkerPathTracerPic/ForkerPathTracer_Header_2.jpg)
+![](https://raw.githubusercontent.com/junhaowww/StorageBaseWithoutCatNotice/main/ForkerPathTracerPic/ForkerPathTracer_Header.jpg)
 
 Bug: some triangles are not rendered...
 
