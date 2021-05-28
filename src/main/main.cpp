@@ -98,15 +98,21 @@ Color3 CastRay(const Ray& ray, const Hittable& world, int depth)
     {
         Ray    rayScattered;
         Color3 emitted = hitRecord.material->Emit();
-        Color3 attenuation = Color3(0.f);
+        Color3 albedo = Color3(0.f);
+        Float pdf = Infinity;
 
         // No Scatter - Return Emissive
-        if (!hitRecord.material->Scatter(ray, hitRecord, attenuation, rayScattered))
+        if (!hitRecord.material->Scatter(ray, hitRecord, albedo, rayScattered, pdf))
         {
             return emitted;
         }
 
-        return emitted + attenuation * CastRay(rayScattered, world, depth - 1);
+        // return emitted + albedo * CastRay(rayScattered, world, depth - 1);
+        Float scatteringPDF = hitRecord.material->ScatteringPDF(ray, hitRecord, rayScattered);
+
+        Color3 ret = CastRay(rayScattered, world, depth - 1);
+
+        return emitted + albedo * scatteringPDF * ret / pdf;
     }
 
     // Background
@@ -150,7 +156,7 @@ int main()
 
     // Image
     const Float aspectRatio = 16.f / 10.f;
-    const int   imageWidth = 1280;
+    const int   imageWidth = 320;
     const int   imageHeight = static_cast<int>(imageWidth / aspectRatio);
     const int   samplesPerPixel = 200;
     const int   maxDepth = 50;
