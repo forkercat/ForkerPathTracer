@@ -2,7 +2,7 @@
 
 Implemented a CPU-based software path tracer that generates high-quality image with BVH and multithreading >_<
 
-![](https://raw.githubusercontent.com/junhaowww/StorageBaseWithoutCatNotice/main/ForkerPathTracerPic/ForkerPathTracer_Header.jpg)
+![](https://raw.githubusercontent.com/forkercat/StorageBaseWithoutCatNotice/main/ForkerPathTracerPic/ForkerPathTracer_Header.jpg)
 
 Bug: some triangles are not rendered...
 
@@ -13,7 +13,7 @@ Bug: some triangles are not rendered...
 brew install spdlog  # for macOS
 
 # Clone
-git clone https://github.com/junhaowww/ForkerPathTracer.git
+git clone https://github.com/forkercat/ForkerPathTracer.git
 cd ForkerPathTracer
 
 # Compile
@@ -25,7 +25,7 @@ cmake .. && make
 
 ## Features ⭐
 
-![](https://raw.githubusercontent.com/junhaowww/StorageBaseWithoutCatNotice/main/ForkerPathTracerPic/ForkerPathTracer_Light.jpg)
+![](https://raw.githubusercontent.com/forkercat/StorageBaseWithoutCatNotice/main/ForkerPathTracerPic/ForkerPathTracer_Light.jpg)
 
 - [x] Path Tracing
 - [x] Supported Primitives
