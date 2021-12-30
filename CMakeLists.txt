@@ -3,8 +3,6 @@ project(ForkerPathTracer)
 
 set(CMAKE_CXX_STANDARD 14)
 
-find_package(spdlog REQUIRED)
-
 #########################################################
 # Common
 set(COMMON_SOURCE
@@ -15,7 +13,8 @@ add_library(common STATIC ${COMMON_SOURCE})
 
 set_target_properties(common PROPERTIES LINKER_LANGUAGE CXX)
 
-target_link_libraries(common PUBLIC spdlog::spdlog)
+include_directories(vendor/spdlog/include)
+
 target_include_directories(common INTERFACE src/common)
 
 #########################################################
@@ -41,11 +40,9 @@ target_include_directories(core INTERFACE src/core)
 add_executable(ForkerPathTracer src/main/main.cpp)
 target_link_libraries(ForkerPathTracer PRIVATE core)
 
-#########################################################
-
-add_executable(Test src/test/test.cpp)
-target_link_libraries(Test PRIVATE core)
+# If you import from `brew install spdlog`
+# find_package(spdlog REQUIRED)
+# target_link_libraries(ForkerRenderer PRIVATE spdlog::spdlog)
 
 # Create output directory
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/output)
-#file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/output)

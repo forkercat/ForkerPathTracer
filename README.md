@@ -1,19 +1,22 @@
 # ForkerPathTracer: CPU-Based Software Path Tracer 🐰
 
+[![CMake](https://github.com/forkercat/ForkerPathTracer/actions/workflows/cmake.yml/badge.svg)](https://github.com/forkercat/ForkerPathTracer/actions/workflows/cmake.yml)
+[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
+
 Implemented a CPU-based software path tracer that generates high-quality image with BVH and multithreading >_<
 
 ![](https://raw.githubusercontent.com/forkercat/StorageBaseWithoutCatNotice/main/ForkerPathTracerPic/ForkerPathTracer_Header.jpg)
 
 Bug: some triangles are not rendered...
 
-## Building & Usage 🔨
+## 🔨 Building & Usage
 
 ```sh
 # Logging
 brew install spdlog  # for macOS
 
 # Clone
-git clone https://github.com/forkercat/ForkerPathTracer.git
+git clone --recursive https://github.com/forkercat/ForkerPathTracer.git
 cd ForkerPathTracer
 
 # Compile
@@ -23,7 +26,7 @@ cmake .. && make
 ./ForkerPathTracer
 ```
 
-## Features ⭐
+## ⭐ Features
 
 ![](https://raw.githubusercontent.com/forkercat/StorageBaseWithoutCatNotice/main/ForkerPathTracerPic/ForkerPathTracer_Light.jpg)
 
@@ -44,7 +47,7 @@ cmake .. && make
 - [x] Support Bounding Volume Hierarchy (BVH) acceleration
 - [x] Multithreading (`std::thread` and `std::future`)
 
-## Console Output 📜
+## 📜 Console Output
 
 ```console
 $ ./ForkerPathTracer
