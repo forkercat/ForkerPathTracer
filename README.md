@@ -1,4 +1,4 @@
-# ForkerPathTracer: CPU-Based Software Path Tracer 🐰
+# Forker Path Tracer: CPU-Based Software Path Tracer 🐰
 
 [![CMake](https://github.com/forkercat/ForkerPathTracer/actions/workflows/cmake.yml/badge.svg)](https://github.com/forkercat/ForkerPathTracer/actions/workflows/cmake.yml)
 [![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
